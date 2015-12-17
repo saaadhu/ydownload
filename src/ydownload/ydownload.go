@@ -9,14 +9,16 @@ import (
 )
 
 func getDownloadURL (origURL string) (string, string, error) {
-	cmd := exec.Command("youtube-dl","-g", "-e", origURL)
+	cmd := exec.Command("youtube-dl","-g","--restrict-filenames","--no-warnings", "-e", origURL)
 	d, err := cmd.Output()
 	if (err != nil) {
 		return "", "", err
 	}
 	o := strings.TrimSpace(string(d))
 	parts := strings.Split (o, "\n")
-	return strings.TrimSpace (strings.Replace(parts[0], " ", "_", -1)), strings.TrimSpace(parts[1]), nil
+        title := strings.Replace(parts[0], " ", "_", -1)
+        title = strings.Replace(title, ",", "_", -1)
+	return strings.TrimSpace (title), strings.TrimSpace(parts[1]), nil
 }
 
 func downloadAndStream (w http.ResponseWriter, r *http.Request) {
